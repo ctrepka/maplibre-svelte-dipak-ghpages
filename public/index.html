@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width,initial-scale=1'>
+
+	<title>Svelte app</title>
+
+	<meta property="og:description"
+        content="Geolocate the user and then track their current location on the map using the GeolocateControl." />
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@4.3.2/dist/maplibre-gl.css' />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='https://unpkg.com/maplibre-gl@4.3.2/dist/maplibre-gl.js'></script>
+	<link rel='stylesheet' href='/global.css'>
+	<link rel='stylesheet' href='/build/bundle.css'>
+
+	<script defer src='/build/bundle.js'></script>
+</head>
+
+<body>
+
+
+    <!-- <div id="rChart" style="display:none; width: 400px; height: 400px;">
+        <button id="closeChart">Hide</button>
+        <canvas onclick="" id="ratingsChart" style="width: 300px; height: 300px;"></canvas>
+    </div> -->
+    <div id="map">
+        <!-- <div id="controls">
+            <button id="startTracking">Start Tracking</button>
+            <button id="stopTracking">Stop Tracking</button>
+            <button id="showChart">Show Ratings Chart</button>
+            <label class="switch" title="Toggle to ON/OFF Add Location Manually">
+                <input type="checkbox" id="locCheck">
+                <span class="slider round">
+                    <span class="on">ON</span>
+                    <span class="off">OFF</span>
+                </span>
+            </label>
+        </div> -->
+    </div>
+
+    <div id="locations" >
+        <h2>Location List</h2>
+        <input type="text" id="searchBar" placeholder="Search by name, type, or rating...">
+        <ul id="locationList"></ul>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+    <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+    <script src="https://js.arcgis.com/4.21/"></script>
+</body>
+</html>
