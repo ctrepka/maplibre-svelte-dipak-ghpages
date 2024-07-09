@@ -6,11 +6,13 @@
         isChecked,
         tracking,
         showChart,
+        showList,
         showRatingsChart,
         closeRatingsChart,
     } from "./stores";
 
     export let map;
+    export let directions;
 
     function startTracking() {
         console.log("Start Tracking");
@@ -21,27 +23,32 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition((position) => {
                         let { latitude, longitude } = position.coords;
-                        latitude += i;
-                        longitude += j;
-                        i += Math.random() * 0.02;
-                        i -= 0.01;
-                        j += Math.random() * 0.03;
-                        j -= 0.01;
-                        console.log(
-                            `Latitude: ${latitude}, Longitude: ${longitude}`,
-                        );
-
-                        if (first) {
-                            const fMarker = new maplibregl.Marker()
-                                .setLngLat([longitude, latitude])
-                                .addTo(map);
-                            first = false;
-                            firstMarker.push(fMarker);
-                        } else {
-                            firstMarker.forEach((marker) => marker.remove());
-                            firstMarker = [];
+                        if (lastLang != longitude || lastLat != latitude) {
+                            // latitude += i;
+                            // longitude += j;
+                            // i += Math.random() * 0.02;
+                            // i -= 0.01;
+                            // j += Math.random() * 0.03;
+                            // j -= 0.01;
+                            console.log(
+                                `Latitude: ${latitude}, Longitude: ${longitude}`,
+                            );
+                            lastLang = longitude;
+                            lastLat = latitude;
+                            if (first) {
+                                const fMarker = new maplibregl.Marker()
+                                    .setLngLat([longitude, latitude])
+                                    .addTo(map);
+                                first = false;
+                                firstMarker.push(fMarker);
+                            } else {
+                                firstMarker.forEach((marker) =>
+                                    marker.remove(),
+                                );
+                                firstMarker = [];
+                            }
+                            updateMap(latitude, longitude, map, directions);
                         }
-                        updateMap(latitude, longitude, map);
                     });
                 }
             }, 5000);
@@ -65,17 +72,57 @@
         }
     }
 
+    function downloadMap() {
+        // var img = map.getCanvas().toDataURL('image/png');
+        // const downloadLink = document.createElement("a")
+        // downloadLink.href = img
+        // downloadLink.download = "route.png"
+        // downloadLink.click();
+
+        // Assuming your map element has an id of 'map'
+        var mapElement = document.getElementById("map");
+
+        html2canvas(mapElement).then((canvas) => {
+            const img = canvas.toDataURL("image/png");
+            const downloadLink = document.createElement("a");
+            downloadLink.href = img;
+            downloadLink.download = "route.png";
+            downloadLink.click();
+        });
+    }
+
+    function toggleLocationList() {
+        showList.update((value) => !value);
+        if ($showList) {
+            document.getElementById("map").style.width = "50vw";
+            document.getElementById("locations").style.width = "50vw";
+            document.getElementById("toggleList").textContent =
+                "Hide Location List";
+        } else {
+            document.getElementById("map").style.width = "100vw";
+            document.getElementById("locations").style.width = "0vw";
+            document.getElementById("toggleList").textContent =
+                "View Location List";
+        }
+    }
+
     let intervalId;
     let first = true;
     let i = 0;
     let j = 0;
     let firstMarker = [];
+    let lastLat;
+    let lastLang;
 </script>
 
 <div id="controls">
     <button on:click={startTracking}>Start Tracking</button>
     <button on:click={stopTracking}>Stop Tracking</button>
     <button on:click={toggleShowChart}>Show Ratings Chart</button>
+    <button id="toggleList" on:click={toggleLocationList}
+        >Show Location List</button
+    >
+    <button on:click={downloadMap}>Download map Route</button>
     <label class="switch" title="Toggle to ON/OFF Add Location Manually">
         <input type="checkbox" bind:checked={$isChecked} />
         <span class="slider round">
@@ -84,7 +131,3 @@
         </span>
     </label>
 </div>
-
-<style>
-    /* styles for controls */
-</style>

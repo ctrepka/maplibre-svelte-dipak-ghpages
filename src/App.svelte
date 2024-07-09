@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { loadLocations, showChart } from './stores';
+    import { loadLocations, showChart, showList } from './stores';
     import Map from './Map.svelte';
     import Controls from './controls.svelte';
     import LocationList from './LocationList.svelte';
@@ -20,4 +20,12 @@
         <canvas id="ratingsChart" style="width: 300px; height: 300px;"></canvas>
     </div>
     {/if}
+
+    <!-- {#if $showList}
+    <div id="locations" >
+        <h2>Location List</h2>
+        <input type="text" id="searchBar" placeholder="Search by name, type, or rating...">
+        <ul id="locationList"></ul>
+    </div>
+    {/if} -->
 </main>

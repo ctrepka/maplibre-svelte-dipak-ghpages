@@ -14,8 +14,9 @@ export const firstMarker = writable([]);
 // export const myChart = writable(null);
 export const currentLocation = writable({ latitude: 30.28, longitude: -97.69 });
 export const showChart = writable(false);
+export const showList = writable(false);
 
-export async function loadLocations(map) {
+export async function loadLocations(map,directions) {
     const locs = await db.locations.toArray();
     const currentLocations = locs.filter(loc => loc.timestamp >= ts);
     const coordinates = currentLocations.map(loc => [loc.longitude, loc.latitude]);
@@ -150,6 +151,13 @@ function attachEventListenersToListItems(map) {
                     break;
             }
 
+            const index = customMarker.findIndex(marker => marker.newMarker._lngLat.lng == longitude && marker.newMarker._lngLat.lat == latitude);
+            if (index !== -1) {
+                const cmarker = customMarker[index]
+                cmarker.newMarker.remove();
+                customMarker.splice(index, 1);
+            }
+
             if (url) {
 
                 const el = document.createElement('div');
@@ -181,7 +189,7 @@ function attachEventListenersToListItems(map) {
     });
 }
 
-export async function saveLocation(latitude, longitude, map) {
+export async function saveLocation(latitude, longitude, map, directions) {
     await db.locations.add({
         OBJECTID: getNextObjectId(),
         latitude,
@@ -192,7 +200,8 @@ export async function saveLocation(latitude, longitude, map) {
         type: '',
         ratings: 0
     });
-    loadLocations(map);
+    await loadLocations(map,directions);
+    directions.addWaypoint([longitude,latitude], 0);
 }
 
 export async function saveNoteToLocation(id, lname, type, ratings, note, map) {
@@ -283,19 +292,19 @@ export function drawRoute(map, coordinates) {
             }
         });
 
-        map.addLayer({
-            id: 'route',
-            type: 'line',
-            source: 'route',
-            layout: {
-                'line-join': 'round',
-                'line-cap': 'round'
-            },
-            paint: {
-                'line-color': '#888',
-                'line-width': 6
-            }
-        });
+        // map.addLayer({
+        //     id: 'route',
+        //     type: 'line',
+        //     source: 'route',
+        //     layout: {
+        //         'line-join': 'round',
+        //         'line-cap': 'round'
+        //     },
+        //     paint: {
+        //         'line-color': '#888',
+        //         'line-width': 6
+        //     }
+        // });
 
         map.addLayer({
             id: 'route-points',
@@ -365,22 +374,13 @@ function getNextObjectId() {
     return nextObjectId++;
 }
 
-export function updateMap(lat, lng, map) {
-    saveLocation(lat, lng, map);
+export function updateMap(lat, lng, map, directions) {
+    saveLocation(lat, lng, map,directions);
     // loadLocations();
     map.flyTo({ center: [lng, lat], zoom: 15 });
 
 }
 
-// export function setMap(map)
-// {
-//     map = map;
-// }
-
-// export function getMap()
-// {
-//     return map;
-// }
 
 let nextObjectId = 1;
 let ts = Date.now();

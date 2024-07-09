@@ -1,6 +1,9 @@
 <script>
     import { onMount } from "svelte";
     import maplibregl from "maplibre-gl";
+    import MapLibreGlDirections, {
+        LoadingIndicatorControl,
+    } from "@maplibre/maplibre-gl-directions";
     import {
         isChecked,
         firstMarker,
@@ -8,8 +11,10 @@
         updateMap,
     } from "./stores";
     import Controls from "./controls.svelte";
+    import { bind } from "svelte/internal";
 
     let map;
+    let directions;
 
     let isCollapsed = false;
 
@@ -23,6 +28,8 @@
             style: "https://raw.githubusercontent.com/go2garret/maps/main/src/assets/json/openStreetMap.json",
             center: originalCenter,
             zoom: originalZoom,
+            preserveDrawingBuffer: true
+
         });
 
         map.addControl(
@@ -33,15 +40,20 @@
         );
         map.addControl(new maplibregl.NavigationControl());
 
-        const homeButton = document.createElement('button');
-        homeButton.className = 'maplibregl-ctrl-icon maplibregl-ctrl-home ';
-        homeButton.type = 'button';
+        const homeButton = document.createElement("button");
+        homeButton.className = "maplibregl-ctrl-icon maplibregl-ctrl-home ";
+        homeButton.type = "button";
         homeButton.onclick = resetMap;
-        homeButton.title = 'Reset to Home';
+        homeButton.title = "Reset to Home";
 
-        const navigationControl = document.querySelector('.maplibregl-ctrl-top-right .maplibregl-ctrl-group');
+        const navigationControl = document.querySelector(
+            ".maplibregl-ctrl-top-right .maplibregl-ctrl-group",
+        );
         if (navigationControl) {
-            navigationControl.insertBefore(homeButton, navigationControl.firstChild);
+            navigationControl.insertBefore(
+                homeButton,
+                navigationControl.firstChild,
+            );
         }
 
         map.on("click", (e) => {
@@ -54,6 +66,9 @@
             // addGeofencePolygon(geofencePolygon);
             addNeighborhoodPoints();
             initLoadLocations(map);
+            directions = new MapLibreGlDirections(map);
+            // directions.interactive = true;
+            map.addControl(new LoadingIndicatorControl(directions));
         });
     });
 
@@ -159,14 +174,14 @@
         map.flyTo({ center: originalCenter, zoom: originalZoom });
     }
 
-    const originalCenter = [-97.69, 30.28]; 
-    const originalZoom = 10; 
+    const originalCenter = [-97.69, 30.28];
+    const originalZoom = 10;
     let i = 0;
     let j = 0;
 </script>
 
-<Controls bind:map />
-
+<Controls bind:map bind:directions />
+<!-- <Child {name} {age} {email} bind:name bind:age bind:email /> -->
 <!-- <div class="maplibregl-ctrl maplibregl-ctrl-group">
     <button class="maplibregl-ctrl-button maplibregl-ctrl-home" on:click={resetMap}></button>
     

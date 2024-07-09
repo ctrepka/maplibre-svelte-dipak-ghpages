@@ -19,6 +19,7 @@
     "svelte": "^3.55.0"
   },
   "dependencies": {
+    "@maplibre/maplibre-gl-directions": "^0.7.0",
     "commonjs": "^0.0.1",
     "dexie": "^4.0.7",
     "maplibre-gl": "^4.5.0",
