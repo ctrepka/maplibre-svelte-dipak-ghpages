@@ -16,7 +16,7 @@ export const currentLocation = writable({ latitude: 30.28, longitude: -97.69 });
 export const showChart = writable(false);
 export const showList = writable(false);
 
-export async function loadLocations(map,directions) {
+export async function loadLocations(map, directions) {
     const locs = await db.locations.toArray();
     const currentLocations = locs.filter(loc => loc.timestamp >= ts);
     const coordinates = currentLocations.map(loc => [loc.longitude, loc.latitude]);
@@ -200,8 +200,10 @@ export async function saveLocation(latitude, longitude, map, directions) {
         type: '',
         ratings: 0
     });
-    await loadLocations(map,directions);
-    directions.addWaypoint([longitude,latitude], 0);
+    await loadLocations(map, directions);
+    if (directions) {
+        directions.addWaypoint([longitude, latitude], 0);
+    }
 }
 
 export async function saveNoteToLocation(id, lname, type, ratings, note, map) {
@@ -375,7 +377,7 @@ function getNextObjectId() {
 }
 
 export function updateMap(lat, lng, map, directions) {
-    saveLocation(lat, lng, map,directions);
+    saveLocation(lat, lng, map, directions);
     // loadLocations();
     map.flyTo({ center: [lng, lat], zoom: 15 });
 

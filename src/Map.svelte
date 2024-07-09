@@ -9,6 +9,8 @@
         firstMarker,
         initLoadLocations,
         updateMap,
+        searchLocations,
+        updateLocationList
     } from "./stores";
     import Controls from "./controls.svelte";
     import { bind } from "svelte/internal";
@@ -70,6 +72,8 @@
             // directions.interactive = true;
             map.addControl(new LoadingIndicatorControl(directions));
         });
+
+        document.getElementById('searchBar').addEventListener('input', handleSearch);
     });
 
     // const polygonCoordinates = [
@@ -150,6 +154,15 @@
         }
     }
 
+    function handleSearch(event) {
+        query = event.target.value.toLowerCase();
+        searchLocations(query).then(results => {
+            updateLocationList(results, map);
+        }).catch(error => {
+            console.error('Search error:', error);
+        });
+    }
+
     function addMarker(lat, lng) {
         if ($firstMarker.length === 0) {
             const fMarker = new maplibregl.Marker()
@@ -178,6 +191,7 @@
     const originalZoom = 10;
     let i = 0;
     let j = 0;
+    let query = '';
 </script>
 
 <Controls bind:map bind:directions />

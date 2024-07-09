@@ -60,7 +60,4 @@
    		 {/each}
    	 </ul>
     </div>
-    
-    <style>
-   	 /* styles for location list */
-    </style>
+   
