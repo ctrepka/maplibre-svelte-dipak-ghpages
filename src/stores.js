@@ -297,9 +297,9 @@ async function addPoints(token, data, latitude, longitude) {
     const editr = await fetch(url, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
         },
-        body: JSON.stringify(body)
+        body: formBody
     });
     console.log("editr: ",editr);
 
