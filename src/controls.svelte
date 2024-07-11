@@ -10,6 +10,7 @@
         showRatingsChart,
         closeRatingsChart,
     } from "./stores";
+    import { time_ranges_to_array } from "svelte/internal";
 
     export let map;
     export let directions;
@@ -23,7 +24,11 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition((position) => {
                         let { latitude, longitude } = position.coords;
-                        if (lastLang != longitude || lastLat != latitude) {
+                        if (
+                            lastLang != longitude ||
+                            lastLat != latitude ||
+                            time == 3
+                        ) {
                             // latitude += i;
                             // longitude += j;
                             // i += Math.random() * 0.02;
@@ -47,7 +52,21 @@
                                 );
                                 firstMarker = [];
                             }
-                            updateMap(latitude, longitude, map, directions);
+                            updateMap(
+                                latitude,
+                                longitude,
+                                map,
+                                directions,
+                                time,
+                            );
+                            if (time != 3) {
+                                time = 0;
+                            }
+                            else{
+                                time ++;
+                            }
+                        } else {
+                            time++;
                         }
                     });
                 }
@@ -108,6 +127,7 @@
 
     let intervalId;
     let first = true;
+    let time = 0;
     let i = 0;
     let j = 0;
     let firstMarker = [];

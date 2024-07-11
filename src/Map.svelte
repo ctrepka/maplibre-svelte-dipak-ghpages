@@ -69,7 +69,7 @@
             addNeighborhoodPoints();
             initLoadLocations(map);
             directions = new MapLibreGlDirections(map);
-            // directions.interactive = true;
+            directions.clear();
             map.addControl(new LoadingIndicatorControl(directions));
         });
 
@@ -173,7 +173,7 @@
             $firstMarker.forEach((marker) => marker.remove());
             // firstMarker.set([]);
         }
-        updateMap(lat, lng, map);
+        updateMap(lat, lng, map,'',3);
     }
 
     // function showPopup(message, latitude, longitude) {

@@ -16,7 +16,7 @@ export const currentLocation = writable({ latitude: 30.28, longitude: -97.69 });
 export const showChart = writable(false);
 export const showList = writable(false);
 
-export async function loadLocations(map, directions) {
+export async function loadLocations(map) {
     const locs = await db.locations.toArray();
     const currentLocations = locs.filter(loc => loc.timestamp >= ts);
     const coordinates = currentLocations.map(loc => [loc.longitude, loc.latitude]);
@@ -134,7 +134,7 @@ function attachEventListenersToListItems(map) {
             const note = row.querySelector(`#note-${locationId}`).value;
 
 
-            await saveNoteToLocation(id, lname, type, ratings, note, map);
+            await saveNoteToLocation(id, lname, type, ratings, note, map, latitude, longitude);
             // loadLocations();
 
             let url = '';
@@ -189,26 +189,120 @@ function attachEventListenersToListItems(map) {
     });
 }
 
-export async function saveLocation(latitude, longitude, map, directions) {
-    await db.locations.add({
-        OBJECTID: getNextObjectId(),
-        latitude,
-        longitude,
-        timestamp: new Date().getTime(),
-        note: '',
-        lname: '',
-        type: '',
-        ratings: 0
-    });
-    await loadLocations(map, directions);
+export async function saveLocation(latitude, longitude, map, directions, time) {
+    if (time == 3) {
+
+        const locs = await db.locations.toArray();
+        const existingLocations = locs.filter(location =>
+            location.latitude == latitude && location.longitude == longitude
+        );
+        console.log(existingLocations);
+        if (existingLocations.length == 0) {
+            await db.locations.add({
+                OBJECTID: getNextObjectId(),
+                latitude,
+                longitude,
+                timestamp: new Date().getTime(),
+                note: '',
+                lname: '',
+                type: '',
+                ratings: 0
+            });
+            await loadLocations(map);
+        }
+    }
     if (directions) {
         directions.addWaypoint([longitude, latitude], 0);
     }
 }
 
-export async function saveNoteToLocation(id, lname, type, ratings, note, map) {
+export async function saveNoteToLocation(id, lname, type, ratings, note, map, latitude, longitude) {
     await db.locations.update(id, { lname, type, ratings, note });
     loadLocations(map);
+
+    const data = {
+        latitude,
+        longitude,
+        note: note,
+        lname: lname,
+        type: type,
+        ratings: ratings
+    };
+    getToken(data, latitude, longitude);
+}
+
+async function getToken(data, latitude, longitude) {
+    const body = {
+        "username": "GISTest_Editor",
+        "password": "GISTest_Editor2024#",
+        "client": "referer",
+        "referer": "localhost:3000",
+        "f": "json"
+    };
+
+    var formBody = [];
+    for (var property in body) {
+        var encodedKey = encodeURIComponent(property);
+        var encodedValue = encodeURIComponent(body[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+
+    const tresp = await fetch("https://gistest.twdb.texas.gov/portal/sharing/rest/generateToken", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        body: formBody
+    });
+    const tjson = await tresp.json();
+    console.log("tjson: ",tjson);
+
+    addPoints(tjson.token, data, parseFloat(latitude), parseFloat(longitude));
+}
+
+async function addPoints(token, data, latitude, longitude) {
+    const url = `https://gistest.twdb.texas.gov/server/rest/services/TxGIO_GIT/Dipak_Test_Collection_Rating/FeatureServer/0/addFeatures?f=pjson&token=${token}`;
+
+
+    const body = {
+        Features: JSON.stringify([
+            {
+                attributes: {
+                    Name: data.lname,
+                    Type: data.type,
+                    Notes: data.note,
+                    Rating: data.ratings
+                },
+                geometry: {
+                    x: longitude,
+                    y: latitude,
+                    spatialReference: {
+                        wkid: 4326
+                    }
+                }
+            }
+        ])
+    };
+    console.log("body: ",body);
+
+    var formBody = [];
+    for (var property in body) {
+        var encodedKey = encodeURIComponent(property);
+        var encodedValue = encodeURIComponent(body[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+
+    const editr = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+    console.log("editr: ",editr);
+
 }
 
 export async function initLoadLocations(map) {
@@ -376,8 +470,8 @@ function getNextObjectId() {
     return nextObjectId++;
 }
 
-export function updateMap(lat, lng, map, directions) {
-    saveLocation(lat, lng, map, directions);
+export function updateMap(lat, lng, map, directions, time) {
+    saveLocation(lat, lng, map, directions, time);
     // loadLocations();
     map.flyTo({ center: [lng, lat], zoom: 15 });
 
