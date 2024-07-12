@@ -15,6 +15,11 @@ export const firstMarker = writable([]);
 export const currentLocation = writable({ latitude: 30.28, longitude: -97.69 });
 export const showChart = writable(false);
 export const showList = writable(false);
+export const loggedIn = writable(false);  // Add loggedIn store
+export const username = writable('');     // Add username store
+export const password = writable('');     // Add password store
+export const token = writable('');        // Add token store
+export const tokenExpiry = writable(null); // Add token expiry store
 
 export async function loadLocations(map) {
     const locs = await db.locations.toArray();
@@ -233,10 +238,10 @@ export async function saveNoteToLocation(id, lname, type, ratings, note, map, la
 
 async function getToken(data, latitude, longitude) {
     const body = {
-        "username": "GISTest_Editor",
-        "password": "GISTest_Editor2024#",
+        "username": username,
+        "password": password,
         "client": "referer",
-        "referer": "localhost:3000",
+        "referer": "localhost:8080",
         "f": "json"
     };
 
@@ -476,6 +481,22 @@ export function updateMap(lat, lng, map, directions, time) {
     map.flyTo({ center: [lng, lat], zoom: 15 });
 
 }
+
+export function isTokenExpired() {
+    const expiry = get(tokenExpiry);
+    return !expiry || new Date() > new Date(expiry);
+}
+
+// export function wrapAuthenticatedRequest(requestFunc) {
+//     return async (...args) => {
+//         if (isTokenExpired()) {
+//             loggedIn.set(false);
+//             // Optionally, trigger a re-login popup or redirect
+//             throw new Error('Token expired. Please log in again.');
+//         }
+//         return await requestFunc(...args);
+//     };
+// }
 
 
 let nextObjectId = 1;

@@ -138,7 +138,7 @@
 <div id="controls">
     <button on:click={startTracking}>Start Tracking</button>
     <button on:click={stopTracking}>Stop Tracking</button>
-    <button on:click={toggleShowChart}>Show Ratings Chart</button>
+    <!-- <button on:click={toggleShowChart}>Show Ratings Chart</button> -->
     <button id="toggleList" on:click={toggleLocationList}
         >Show Location List</button
     >

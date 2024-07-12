@@ -195,6 +195,25 @@
 </script>
 
 <Controls bind:map bind:directions />
+<div style="display: flex;">
+<div id="map">
+</div>
+
+<div id="locations" >
+    <h2>Location List</h2>
+    <input type="text" id="searchBar" placeholder="Search by name, type, or rating...">
+    <ul id="locationList"></ul>
+</div>
+
+
+<!-- <div id="rChart" style="width: 300px; height: 400px;">
+    <button on:click={() => showChart.set(false)}>X</button>
+    <canvas id="ratingsChart" style="width: 300px; height: 300px;"
+    ></canvas>
+    <h2>Rating Pie Chart</h2>
+</div> -->
+
+</div>
 <!-- <Child {name} {age} {email} bind:name bind:age bind:email /> -->
 <!-- <div class="maplibregl-ctrl maplibregl-ctrl-group">
     <button class="maplibregl-ctrl-button maplibregl-ctrl-home" on:click={resetMap}></button>
