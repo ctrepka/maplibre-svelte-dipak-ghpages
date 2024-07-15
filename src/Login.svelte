@@ -31,7 +31,7 @@
 </form>
 
 <style>
-    /* :global(body) {
+    :global(body) {
         margin: 0;
         font-family: "Arial", sans-serif;
         background-color: #f0f0f0;
@@ -43,17 +43,13 @@
             #bf0a30 50%,
             #002868 50%
         );
-    } */
+    }
 
     form {
-        background: linear-gradient(
-            #bf0a30 50%,
-            #002868 50%
-        );
+        background: white;
         padding: 2rem;
         border-radius: 5px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        justify-content: center;
         width: 300px;
         text-align: center;
     }
