@@ -15,11 +15,11 @@ export const firstMarker = writable([]);
 export const currentLocation = writable({ latitude: 30.28, longitude: -97.69 });
 export const showChart = writable(false);
 export const showList = writable(false);
-export const loggedIn = writable(false);  // Add loggedIn store
-export const username = writable('');     // Add username store
-export const password = writable('');     // Add password store
-export const token = writable('');        // Add token store
-export const tokenExpiry = writable(null); // Add token expiry store
+export const loggedIn = writable(false);  
+export const username = writable('');     
+export const password = writable('');     
+export const token = writable('');        
+export const tokenExpiry = writable(null); 
 
 export async function loadLocations(map) {
     const locs = await db.locations.toArray();
@@ -237,9 +237,18 @@ export async function saveNoteToLocation(id, lname, type, ratings, note, map, la
 }
 
 async function getToken(data, latitude, longitude) {
+    let user;
+    let pwd;
+    username.subscribe( value => {
+        user = value;
+    })
+    password.subscribe( value => {
+        pwd = value;
+    })
+    console.log(user,'::',pwd)
     const body = {
-        "username": username,
-        "password": password,
+        "username": user,
+        "password": pwd,
         "client": "referer",
         "referer": "localhost:8080",
         "f": "json"
@@ -307,6 +316,24 @@ async function addPoints(token, data, latitude, longitude) {
         body: formBody
     });
     console.log("editr: ",editr);
+
+    // const nurl = `https://gistest.twdb.texas.gov/server/rest/services/TxGIO_GIT/Dipak_Test_Collection_Rating/FeatureServer/0/query?where=1%3D1&outFields=*&f=pjson&token=${token}`
+
+    // try {
+    //     const response = await fetch(nurl, {
+    //         method: "GET",
+    //         headers: {
+    //             "Content-Type": "application/json"
+    //         }
+    //     });
+
+    //     const json = await response.json();
+    //     console.log("Fetched Data: ", json.features);
+
+    // } catch (error) {
+    //     console.error("Error fetching data: ", error);
+    // }
+
 
 }
 

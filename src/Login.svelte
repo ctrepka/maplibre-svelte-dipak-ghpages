@@ -11,41 +11,10 @@
 
         username.set(user);
         password.set(pass);
-        // token.set(newToken);
-        // tokenExpiry.set(expiry);
-        loggedIn.set(true); // Set the loggedIn store to true
+        loggedIn.set(true); 
         dispatch("login");
-
-        // Simulate an authentication request
-        // authenticate(user, pass).then(({ token: newToken, expiry }) => {
-        //     // Update the stores
-        //     username.set(user);
-        //     password.set(pass);
-        //     token.set(newToken);
-        //     tokenExpiry.set(expiry);
-        //     loggedIn.set(true); // Set the loggedIn store to true
-        //     dispatch('login');
-        // }).catch(error => {
-        //     console.error('Authentication failed:', error);
-        //     alert('Authentication failed');
-        // });
     }
 
-    // async function authenticate(username, password) {
-    //     // Simulate a backend authentication call
-    //     return new Promise((resolve, reject) => {
-    //         setTimeout(() => {
-    //             if (username === 'admin' && password === 'password') {
-    //                 resolve({
-    //                     token: 'fake-jwt-token',
-    //                     expiry: new Date(Date.now() + 1000 * 60 * 60).toISOString() // 1 hour expiry
-    //                 });
-    //             } else {
-    //                 reject('Invalid credentials');
-    //             }
-    //         }, 1000);
-    //     });
-    // }
 </script>
 
 <form on:submit={handleSubmit}>
