@@ -8,6 +8,7 @@
         isChecked,
         firstMarker,
         initLoadLocations,
+        getInitialData,
         updateMap,
         searchLocations,
         updateLocationList
@@ -64,8 +65,9 @@
             }
         });
 
-        map.on("load", () => {
+        map.on("load", async () => {
             // addGeofencePolygon(geofencePolygon);
+            await getInitialData();
             addNeighborhoodPoints();
             initLoadLocations(map);
             directions = new MapLibreGlDirections(map);
@@ -195,7 +197,7 @@
 </script>
 
 <Controls bind:map bind:directions />
-<div style="display: flex;">
+<!-- <div style="display: flex; flex-direction: column;"> -->
 <div id="map">
 </div>
 
@@ -203,7 +205,7 @@
     <h2>Location List</h2>
     <input type="text" id="searchBar" placeholder="Search by name, type, or rating...">
     <ul id="locationList"></ul>
-</div>
+<!-- </div> -->
 
 
 <!-- <div id="rChart" style="width: 300px; height: 400px;">

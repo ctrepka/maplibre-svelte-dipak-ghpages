@@ -15,11 +15,11 @@ export const firstMarker = writable([]);
 export const currentLocation = writable({ latitude: 30.28, longitude: -97.69 });
 export const showChart = writable(false);
 export const showList = writable(false);
-export const loggedIn = writable(false);  
-export const username = writable('');     
-export const password = writable('');     
-export const token = writable('');        
-export const tokenExpiry = writable(null); 
+export const loggedIn = writable(false);
+export const username = writable('');
+export const password = writable('');
+export const token = writable('');
+export const tokenExpiry = writable(null);
 
 export async function loadLocations(map) {
     const locs = await db.locations.toArray();
@@ -236,16 +236,17 @@ export async function saveNoteToLocation(id, lname, type, ratings, note, map, la
     getToken(data, latitude, longitude);
 }
 
-async function getToken(data, latitude, longitude) {
+export async function getInitialData() {
+
     let user;
     let pwd;
-    username.subscribe( value => {
+    username.subscribe(value => {
         user = value;
     })
-    password.subscribe( value => {
+    password.subscribe(value => {
         pwd = value;
     })
-    console.log(user,'::',pwd)
+    console.log(user, '::', pwd)
     const body = {
         "username": user,
         "password": pwd,
@@ -270,7 +271,81 @@ async function getToken(data, latitude, longitude) {
         body: formBody
     });
     const tjson = await tresp.json();
-    console.log("tjson: ",tjson);
+
+    const nurl = `https://gistest.twdb.texas.gov/server/rest/services/TxGIO_GIT/Dipak_Test_Collection_Rating/FeatureServer/0/query?where=1%3D1&outFields=*&f=pjson&token=${tjson.token}`
+
+    try {
+        const response = await fetch(nurl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const json = await response.json();
+        console.log("Fetched Data: ", json.features);
+
+
+        const data = json.features
+            .filter(feature => feature.attributes.Type === "Restaurant" || feature.attributes.Type === "Monument")
+            .map(feature => ({
+                OBJECTID: feature.attributes.OBJECTID,
+                lname: feature.attributes.Name,
+                type: feature.attributes.Type,
+                ratings: feature.attributes.Rating,
+                timestamp: new Date().getTime(),
+                note: feature.attributes.Notes,
+                longitude: feature.geometry.x,
+                latitude: feature.geometry.y
+            }));
+
+        // return data;
+        console.log("Fetched Data: ", data);
+        await db.locations.clear();
+        await db.locations.bulkPut(data);
+
+    } catch (error) {
+        console.error("Error fetching data: ", error);
+    }
+
+}
+
+
+async function getToken(data, latitude, longitude) {
+    let user;
+    let pwd;
+    username.subscribe(value => {
+        user = value;
+    })
+    password.subscribe(value => {
+        pwd = value;
+    })
+    console.log(user, '::', pwd)
+    const body = {
+        "username": user,
+        "password": pwd,
+        "client": "referer",
+        "referer": "localhost:8080",
+        "f": "json"
+    };
+
+    var formBody = [];
+    for (var property in body) {
+        var encodedKey = encodeURIComponent(property);
+        var encodedValue = encodeURIComponent(body[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+
+    const tresp = await fetch("https://gistest.twdb.texas.gov/portal/sharing/rest/generateToken", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        body: formBody
+    });
+    const tjson = await tresp.json();
+    console.log("tjson: ", tjson);
 
     addPoints(tjson.token, data, parseFloat(latitude), parseFloat(longitude));
 }
@@ -298,7 +373,7 @@ async function addPoints(token, data, latitude, longitude) {
             }
         ])
     };
-    console.log("body: ",body);
+    console.log("body: ", body);
 
     var formBody = [];
     for (var property in body) {
@@ -315,7 +390,7 @@ async function addPoints(token, data, latitude, longitude) {
         },
         body: formBody
     });
-    console.log("editr: ",editr);
+    console.log("editr: ", editr);
 
     // const nurl = `https://gistest.twdb.texas.gov/server/rest/services/TxGIO_GIT/Dipak_Test_Collection_Rating/FeatureServer/0/query?where=1%3D1&outFields=*&f=pjson&token=${token}`
 
@@ -346,6 +421,7 @@ export async function initLoadLocations(map) {
         await db.locations.delete(location.id);
     }
 
+    console.log("Valid Loc: ",validLocations);
 
     validLocations.forEach(location => {
 

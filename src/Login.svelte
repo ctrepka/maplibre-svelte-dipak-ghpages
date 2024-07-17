@@ -31,32 +31,29 @@
 </form>
 
 <style>
-    :global(body) {
+       :global(body) {
         margin: 0;
-        font-family: "Arial", sans-serif;
-        background-color: #f0f0f0;
+        font-family: 'Arial', sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background: linear-gradient(
-            #bf0a30 50%,
-            #002868 50%
-        );
+        background-image: linear-gradient(to bottom, #bf0a30 33%, #fff 33%, #fff 66%, #0033a0 66%);
     }
 
     form {
         background: white;
         padding: 2rem;
         border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         width: 300px;
         text-align: center;
+        z-index: 1;
     }
 
     h1 {
         margin-bottom: 1rem;
-        color: #002868; /* Blue color */
+        color: #0033a0; /* Blue color */
     }
 
     .input-group {
@@ -67,7 +64,7 @@
     label {
         display: block;
         margin-bottom: 0.5rem;
-        color: #002868; /* Blue color */
+        color: #0033a0; /* Blue color */
     }
 
     input {
@@ -91,5 +88,57 @@
 
     button:hover {
         background-color: #9b0724; /* Darker red */
+    }
+
+    /* Mobile styles */
+    @media (max-width: 600px) {
+        form {
+            width: 100%;
+            padding: 1rem;
+        }
+
+        button {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        input {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Tablet styles */
+    @media (min-width: 600px) and (max-width: 900px) {
+        form {
+            width: 80%;
+        }
+
+        button {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        input {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Desktop styles */
+    @media (min-width: 900px) {
+        form {
+            width: 400px;
+        }
+
+        button {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        input {
+            padding: 1rem;
+            font-size: 1rem;
+        }
     }
 </style>

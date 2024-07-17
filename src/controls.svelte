@@ -113,8 +113,8 @@
     function toggleLocationList() {
         showList.update((value) => !value);
         if ($showList) {
-            document.getElementById("map").style.width = "50vw";
-            document.getElementById("locations").style.width = "50vw";
+            document.getElementById("map").style.width = "0vw";
+            document.getElementById("locations").style.width = "100vw";
             document.getElementById("toggleList").textContent =
                 "Hide Location List";
         } else {
