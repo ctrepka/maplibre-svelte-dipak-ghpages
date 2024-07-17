@@ -32,3 +32,4 @@ jobs:
     - run: git --work-tree public add --all
     - run: git status
     - run: git --work-tree public commit -m 'gh-pages deployment'
+    - run: git push origin HEAD:gh-pages --force
