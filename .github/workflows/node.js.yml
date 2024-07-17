@@ -29,6 +29,7 @@ jobs:
     - run: git config user.email github-actions@github.com
     - run: git checkout -b gh-pages
     - run: npm run build
+    - run: sed -i 's/\/global.css/global.css/g' ./public/index.html
     - run: git --work-tree public add --all
     - run: git status
     - run: git --work-tree public commit -m 'gh-pages deployment'
